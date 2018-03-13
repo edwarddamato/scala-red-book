@@ -24,17 +24,17 @@ object Lizt {
     if (as.isEmpty) Nil
     else Cons(as.head, apply(as.tail: _*))
 
-  def main(args: Array[String]): Unit = {
-//    println(sum2(Lizt(1,2,3,4,5)))
-//    println(sumUsingFoldLeft(Lizt(1,2,3,4,5)))
-//    println(lengthUsingFoldLeft(Lizt(1,2,3,4,5)))
-//    println(concatLists(Lizt(Lizt(1,2,4), Lizt(51,1,2))))
-
-//    println(incrementInts(Lizt(1,2,5,6,7), 1))
-
-//    println(map(Lizt(1,2,3,5,6))((num:Int) => num + 5))
-    println(doubleToString(Lizt(1.2,5.3,4.2)))
-  }
+//  def main(args: Array[String]): Unit = {
+////    println(sum2(Lizt(1,2,3,4,5)))
+////    println(sumUsingFoldLeft(Lizt(1,2,3,4,5)))
+////    println(lengthUsingFoldLeft(Lizt(1,2,3,4,5)))
+////    println(concatLists(Lizt(Lizt(1,2,4), Lizt(51,1,2))))
+//
+////    println(incrementInts(Lizt(1,2,5,6,7), 1))
+//
+////    println(map(Lizt(1,2,3,5,6))((num:Int) => num + 5))
+//    println(doubleToString(Lizt(1.2,5.3,4.2)))
+//  }
 
 
   def tail[A](list: Lizt[A]): Lizt[A] = {
@@ -120,6 +120,60 @@ object Lizt {
     case Nil => Lizt[B]()
     case _ => foldRight(list, Lizt[B]())((h, t) => Cons(f(h), t))
   }
+
+  def filterReverse[A](list: Lizt[A])(f: A => Boolean): Lizt[A] = list match {
+    case Nil => list
+    case _ => foldLeft(list, Lizt[A]())((ls, value) => {
+      if (f(value)) Cons(value, ls)
+      else ls
+    })
+  }
+
+  def filter[A](list: Lizt[A])(f: A => Boolean): Lizt[A] = list match {
+    case Nil => list
+    case _ => foldRight(list, Lizt[A]())((value, ls) => {
+      if (f(value)) Cons(value, ls)
+      else ls
+    })
+  }
+
+  def flatMap[A,B](list: Lizt[A])(f: A => Lizt[B]): Lizt[B] = list match {
+    case Nil => Lizt[B]()
+    case _ => foldRight(list, Lizt[B]())((h, t) => {
+      foldRight(f(h), t)((h, t) => Cons(h, t))
+    })
+  }
+
+  def filterWithFlatMap[A](list: Lizt[A])(f: A => Boolean): Lizt[A] = list match {
+    case Nil => list
+    case _ => flatMap(list)((num:A) => {
+      if (f(num)) Lizt(num)
+      else Nil
+    })
+  }
+
+  def addListElements(list1: Lizt[Int], list2: Lizt[Int]): Lizt[Int] = (list1, list2) match {
+    case (Nil, _) => list2
+    case (_, Nil) => list1
+    case (Cons(h1, t1), Cons(h2, t2)) => Cons(h1 + h2, addListElements(t1, t2))
+  }
+
+  def zipWith[A, B, C](list1: Lizt[A], list2: Lizt[B])(f: (A,B) => C): Lizt[C] = (list1, list2) match {
+    case (Nil, _) => Nil
+    case (_, Nil) => Nil
+    case (Cons(h1, t1), Cons(h2, t2)) => Cons(f(h1, h2), zipWith(t1, t2)(f))
+  }
+
+  def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean = sup match {
+    case List() => false
+    case _ :: t => {
+      if (sup.startsWith(sub)) true
+      else {
+        hasSubsequence(t, sub)
+      }
+    }
+  }
+
 
   /*
   Cons(1, Cons(2, Cons(3)))
