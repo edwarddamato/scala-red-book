@@ -26,3 +26,24 @@ sealed trait Obtion[+A] {
 }
 case class Some[+A](get: A) extends Obtion[A]
 case object None extends Obtion[Nothing]
+
+object SeqOperations {
+  def mean(xs: Seq[Double]): Obtion[Double] = {
+    if (xs.isEmpty) None
+    else Some(xs.sum / xs.length)
+  }
+
+  def variance(xs: Seq[Double]): Obtion[Double] = {
+    if (xs.isEmpty) None
+    else mean(xs).flatMap(m => mean(xs.map(v => Math.pow(v - m, 2))))
+  }
+
+  def map2[A,B,C](a: Obtion[A], b: Obtion[B])(f: (A, B) => C): Obtion[C] = {
+    a.flatMap(aa => b.flatMap(bb => Some(f(aa, bb))))
+  }
+
+  def sequence[A](a: List[Obtion[A]]): Obtion[List[A]] = a match {
+    case Nil => Some(Nil)
+    case h :: t => h.flatMap(hh => sequence(t).map(tt => hh :: tt))
+  }
+}
