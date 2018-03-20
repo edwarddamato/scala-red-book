@@ -104,6 +104,22 @@ class BlaTest extends FlatSpec with Matchers {
           Leaf(5),
           Leaf(6)
         )
-      ))(x => x * 2) shouldBe 4
+      ))(x => x * 2) shouldBe
+      Treee(
+        Branch(
+          Branch(
+            Leaf(2),
+            Leaf(4)
+          ),
+          Branch(
+            Leaf(6),
+            Leaf(8)
+          )
+        ),
+        Branch(
+          Leaf(10),
+          Leaf(12)
+        )
+      )
   }
 }
