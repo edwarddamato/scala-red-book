@@ -1,3 +1,5 @@
+package Chapter3
+
 sealed trait Treee[+A]
 case class Leaf[A](value: A) extends Treee[A]
 case class Branch[A](left: Treee[A], right: Treee[A]) extends Treee[A]

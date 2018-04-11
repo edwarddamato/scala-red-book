@@ -1,3 +1,5 @@
+package Chapter4
+
 sealed trait Obtion[+A] {
   def map[B](f: A => B): Obtion[B] = this match {
     case None => None
@@ -24,6 +26,7 @@ sealed trait Obtion[+A] {
     case Some(a) => if (f(a)) Some(a) else None
   }
 }
+
 case class Some[+A](get: A) extends Obtion[A]
 case object None extends Obtion[Nothing]
 
