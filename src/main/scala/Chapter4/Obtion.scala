@@ -44,6 +44,21 @@ object SeqOperations {
 
   def sequence[A](a: List[Obtion[A]]): Obtion[List[A]] = a match {
     case Nil => Some(Nil)
-    case h :: t => h.flatMap(hh => sequence(t).map(tt => hh :: tt))
+    case None :: _ => None
+    case h :: t => h.flatMap(hh => sequence(t).map(hh :: _))
   }
+
+  def traverse[A, B](a: List[A])(f: A => Obtion[B]): Obtion[List[B]] = a match {
+    case Nil => Some(Nil)
+    case h :: t => traverse(t)(f).flatMap(tt => f(h).map(hh => hh :: tt))
+  }
+
+  def sequenceWithTraverse[A](a: List[Obtion[A]]): Obtion[List[A]] = traverse(a)(identity)
+
+
+  def ANSWERtraverse[A, B](a: List[A])(f: A => Obtion[B]): Obtion[List[B]] =
+    a match {
+      case Nil => Some(Nil)
+      case h::t => map2(f(h), traverse(t)(f))(_ :: _)
+    }
 }

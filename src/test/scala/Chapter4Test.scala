@@ -3,6 +3,8 @@
   */
 import org.scalatest.{FlatSpec, Matchers}
 
+import scala.util.Try
+
 class   Chapter4Test extends FlatSpec with Matchers {
   "map" should "map" in {
     val foo: Obtion[Int] = Some(5)
@@ -52,6 +54,22 @@ class   Chapter4Test extends FlatSpec with Matchers {
   "sequence" should "sequence" in {
     SeqOperations.sequence(List(Some(1), Some(2))) shouldBe Some(1 :: 2 :: Nil)
     SeqOperations.sequence(List(Some(1), Some(2), None)) shouldBe None
-    SeqOperations.sequence(Nil) shouldBe None
+    SeqOperations.sequence(Nil) shouldBe Some(List())
+  }
+
+  "sequenceWithTraverse" should "sequenceWithTraverse" in {
+    SeqOperations.sequenceWithTraverse(List(Some(1), Some(2))) shouldBe Some(1 :: 2 :: Nil)
+    SeqOperations.sequenceWithTraverse(List(Some(1), Some(2), None)) shouldBe None
+    SeqOperations.sequenceWithTraverse(Nil) shouldBe Some(List())
+  }
+
+  "traverse" should "traverse" in {
+    SeqOperations.traverse(List(1,2,3,4))(a => if (a % 2 == 0) None else Some(a)) shouldBe None
+    SeqOperations.traverse(List(1,2,3,4))(a => Some(a)) shouldBe Some(List(1,2,3,4))
+  }
+
+  "ANSWERtraverse" should "ANSWERtraverse" in {
+    SeqOperations.traverse(List(1,2,3,4))(a => if (a % 2 == 0) None else Some(a)) shouldBe SeqOperations.ANSWERtraverse(List(1,2,3,4))(a => if (a % 2 == 0) None else Some(a))
+    SeqOperations.traverse(List(1,2,3,4))(a => Some(a)) shouldBe SeqOperations.ANSWERtraverse(List(1,2,3,4))(a => Some(a))
   }
 }
