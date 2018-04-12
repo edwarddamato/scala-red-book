@@ -3,7 +3,6 @@ package Chapter5
 sealed trait Sdream[+A] {
   def toList: List[A] = this match {
     case Empty => List()
-    case Cons(h, Empty) => List(h())
     case Cons(h, t) => h() :: t().toList
   }
 }

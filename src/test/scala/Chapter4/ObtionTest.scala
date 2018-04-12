@@ -1,11 +1,10 @@
-/**
-  * Created by eddamato on 19/03/2018.
-  */
+package Chapter4
+
 import org.scalatest.{FlatSpec, Matchers}
 
 import scala.util.Try
 
-class   Chapter4Test extends FlatSpec with Matchers {
+class Chapter4Test extends FlatSpec with Matchers {
   "map" should "map" in {
     val foo: Obtion[Int] = Some(5)
     foo.map(_ * 2) shouldBe Some(10)
@@ -42,6 +41,7 @@ class   Chapter4Test extends FlatSpec with Matchers {
 
   "variance" should "variance" in {
     SeqOperations.variance(Seq(1, 2, 3, 4)) shouldBe Some(1.25)
+    SeqOperations.varianceForComp(Seq(1, 2, 3, 4)) shouldBe Some(1.25)
   }
 
   "map2" should "map2" in {

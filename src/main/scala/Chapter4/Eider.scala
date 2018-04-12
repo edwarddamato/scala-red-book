@@ -1,3 +1,5 @@
+package Chapter4
+
 sealed trait Eider[+E, +A] {
   def map[B](f: A => B): Eider[E, B] = this match {
     case Left(e) => Left(e)

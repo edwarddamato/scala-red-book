@@ -1,3 +1,5 @@
+package Chapter3
+
 sealed trait Lizt[+A]
 case object Nill extends Lizt[Nothing]
 
@@ -24,19 +26,19 @@ object Lizt {
     if (as.isEmpty) Nill
     else Cons(as.head, apply(as.tail: _*))
 
-//  def main(args: Array[String]): Unit = {
-////    println(sum2(Lizt(1,2,3,4,5)))
-////    println(sumUsingFoldLeft(Lizt(1,2,3,4,5)))
-////    println(lengthUsingFoldLeft(Lizt(1,2,3,4,5)))
-////    println(concatLists(Lizt(Lizt(1,2,4), Lizt(51,1,2))))
-//
-////    println(incrementInts(Lizt(1,2,5,6,7), 1))
-//
-////    println(map(Lizt(1,2,3,5,6))((num:Int) => num + 5))
-//    println(doubleToString(Lizt(1.2,5.3,4.2)))
-//  }
+  //  def main(args: Array[String]): Unit = {
+  ////    println(sum2(Lizt(1,2,3,4,5)))
+  ////    println(sumUsingFoldLeft(Lizt(1,2,3,4,5)))
+  ////    println(lengthUsingFoldLeft(Lizt(1,2,3,4,5)))
+  ////    println(concatLists(Lizt(Lizt(1,2,4), Lizt(51,1,2))))
+  //
+  ////    println(incrementInts(Lizt(1,2,5,6,7), 1))
+  //
+  ////    println(map(Lizt(1,2,3,5,6))((num:Int) => num + 5))
+  //    println(doubleToString(Lizt(1.2,5.3,4.2)))
+  //  }
 
-
+  // 3.2
   def tail[A](list: Lizt[A]): Lizt[A] = {
     list match {
       case Nill => list
@@ -44,10 +46,40 @@ object Lizt {
     }
   }
 
+  // 3.3
   def setHead[A](list: Lizt[A], head: A): Lizt[A] = {
     list match {
       case Cons(_, tail) => Cons(head, tail)
     }
+  }
+
+  // 3.4
+  def drop[A](list: Lizt[A], n: Int): Lizt[A] = {
+    if (n == 0) list
+    else list match {
+      case Cons(_, tail) => drop(tail, n-1)
+    }
+  }
+
+  // 3.5
+  def dropWhile[A](list: Lizt[A])(f: A => Boolean): Lizt[A] = {
+    list match {
+      case Cons(head, tail) if f(head) => dropWhile(tail)(f)
+      case _ => list
+    }
+  }
+
+  // 3.6
+  def init[A](list: Lizt[A]): Lizt[A] = {
+    list match {
+      case Cons(_, Nill) => Nill
+      case Cons(head, tail) => Cons(head, init(tail))
+    }
+  }
+
+  def foldRight[A, B](list: Lizt[A], z: B)(f: (A, B) => B): B = list match {
+    case Nill => z
+    case Cons(head, tail) => f(head, foldRight(tail, z)(f))
   }
 
   def length[A](list: Lizt[A]): Int = {
@@ -71,11 +103,6 @@ object Lizt {
     case Nill => 0
     case _ => foldRight(list, 1)((x, y) => x + y)
   }
-
-  /*
-  Cons(1, Cons(2, Cons(3)))
-
-   */
 
   def sumUsingFoldLeft(list: Lizt[Int]): Int = list match {
     case Nill => 0
@@ -174,55 +201,8 @@ object Lizt {
     }
   }
 
-
-  /*
-  Cons(1, Cons(2, Cons(3)))
-  1 + Cons(2, Cons(3))
-  1 + 2 + Cons(3, Nil)
-  1 + 2 + 3
-   */
-
-  def foldRight[A, B](list: Lizt[A], z: B)(f: (A, B) => B): B = list match {
-    case Nill => z
-    case Cons(head, tail) => f(head, foldRight(tail, z)(f))
-  }
-
   def reverse[A](list: Lizt[A]): Lizt[A] = list match {
     case Nill => Nill
     case _ => foldLeft(list, Lizt[A]())((l, h) => Cons(h, l))
   }
-
-
-  /*
-  Cons(1, Cons(2, Cons(3, Cons(4, Cons(5)))))
-  1, []
-  2, 1, []
-  3, 2, 1, []
-   */
-
-
-  def drop[A](list: Lizt[A], n: Int): Lizt[A] = {
-    val endListLength = Lizt.length(list) - n
-    def go[A](l: Lizt[A]): Lizt[A] = {
-      if (Lizt.length(l) == endListLength) l
-      else go(Lizt.tail(l))
-    }
-
-    go(list)
-  }
-
-  def dropWhile[A](list: Lizt[A], f: A => Boolean): Lizt[A] = {
-    list match {
-      case Cons(head, tail) if f(head) => dropWhile(tail, f)
-      case _ => list
-    }
-  }
-
-  def init[A](list: Lizt[A]): Lizt[A] = {
-    list match {
-      case Cons(_, Nill) => Nill
-      case Cons(head, tail) => Cons(head, init(tail))
-    }
-  }
-
 }
