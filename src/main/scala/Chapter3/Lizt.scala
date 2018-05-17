@@ -6,38 +6,6 @@ case object Nill extends Lizt[Nothing]
 case class Cons[+A](head: A, tail: Lizt[A]) extends Lizt[A]
 
 object Lizt {
-  def sum(ints: Lizt[Int]): Int = ints match {
-    case Nill => 0
-    case Cons(x,xs) => x + sum(xs)
-  }
-
-  def product(ds: Lizt[Double]): Double = ds match {
-    case Nill => 1.0
-    case Cons(0.0, _) => 0.0
-    case Cons(x,xs) => x * product(xs)
-  }
-
-  def product2(list: Lizt[Double]): Double = list match {
-    case Nill => 0.0
-    case _ => foldRight(list, 1.0)(_ * _)
-  }
-
-  def apply[A](as: A*): Lizt[A] = // Variadic function syntax
-    if (as.isEmpty) Nill
-    else Cons(as.head, apply(as.tail: _*))
-
-  //  def main(args: Array[String]): Unit = {
-  ////    println(sum2(Lizt(1,2,3,4,5)))
-  ////    println(sumUsingFoldLeft(Lizt(1,2,3,4,5)))
-  ////    println(lengthUsingFoldLeft(Lizt(1,2,3,4,5)))
-  ////    println(concatLists(Lizt(Lizt(1,2,4), Lizt(51,1,2))))
-  //
-  ////    println(incrementInts(Lizt(1,2,5,6,7), 1))
-  //
-  ////    println(map(Lizt(1,2,3,5,6))((num:Int) => num + 5))
-  //    println(doubleToString(Lizt(1.2,5.3,4.2)))
-  //  }
-
   // 3.2
   def tail[A](list: Lizt[A]): Lizt[A] = {
     list match {
@@ -77,47 +45,76 @@ object Lizt {
     }
   }
 
+  // 3.7
+  def sum(ints: Lizt[Int]): Int = ints match {
+    case Nill => 0
+    case Cons(x,xs) => x + sum(xs)
+  }
+
+  // 3.7
+  def product(ds: Lizt[Double]): Double = ds match {
+    case Nill => 1.0
+    case Cons(0.0, _) => 0.0
+    case Cons(x,xs) => x * product(xs)
+  }
+
+  // 3.7
+  def productWithFoldRight(list: Lizt[Double]): Double = list match {
+    case Nill => 0.0
+    case _ => foldRight(list, 1.0)((v, acc) => v * acc)
+  }
+
+  // 3.7
   def foldRight[A, B](list: Lizt[A], z: B)(f: (A, B) => B): B = list match {
     case Nill => z
     case Cons(head, tail) => f(head, foldRight(tail, z)(f))
   }
 
-  def length[A](list: Lizt[A]): Int = {
-    @annotation.tailrec
-    def go[A](l: Lizt[A], len: Int): Int = {
-      l match {
-        case Cons(_, Nill) => len + 1
-        case _ => go(Lizt.tail(l), len + 1)
-      }
-    }
-
-    go(list, 0)
-  }
-
-  def length2[A](list: Lizt[A]): Int = list match {
+  // 3.9
+  def lengthWithFoldRight[A](list: Lizt[A]): Int = list match {
     case Nill => 0
-    case _ => foldRight(list, 0)((_,acc) => acc + 1)
+    case _ => foldRight(list, 0)((_, acc) => acc + 1)
   }
 
-  def sum2(list: Lizt[Int]): Int = list match {
-    case Nill => 0
-    case _ => foldRight(list, 1)((x, y) => x + y)
+  // 3.10
+  def foldLeft[A, B](list: Lizt[A], z: B)(f: (B, A) => B): B = list match {
+    case Nill => z
+    case Cons(head, tail) => foldLeft(tail, f(z, head))(f)
   }
 
+  // 3.11
   def sumUsingFoldLeft(list: Lizt[Int]): Int = list match {
     case Nill => 0
-    case _ => foldLeft(list, 1)(_ + _)
+    case _ => foldLeft(list, 0)(_ + _)
   }
 
+  // 3.11
   def productUsingFoldLeft(list: Lizt[Int]): Int = list match {
     case Nill => 0
     case _ => foldLeft(list, 1)(_ * _)
   }
 
+  // 3.11
   def lengthUsingFoldLeft(list: Lizt[Int]): Int = list match {
     case Nill => 0
     case _ => foldLeft(list, 0)((acc, _) => acc + 1)
   }
+
+  // 3.12
+  def reverse[A](list: Lizt[A]): Lizt[A] = list match {
+    case Nill => list
+    case _ => foldLeft(list, Nill:Lizt[A])((lz, value) => Cons(value, lz))
+  }
+
+  // 3.12
+  def reverseWithFoldRight[A](list: Lizt[A]): Lizt[A] = list match {
+    case Nill => list
+    case _ => foldRight(list, Nill:Lizt[A])((value, lz) => Cons(value, lz))
+  }
+
+  def apply[A](as: A*): Lizt[A] = // Variadic function syntax
+    if (as.isEmpty) Nill
+    else Cons(as.head, apply(as.tail: _*))
 
   def append[A](list: Lizt[A], extra: Lizt[A]): Lizt[A] = list match {
     case Nill => list
@@ -126,11 +123,6 @@ object Lizt {
 
   def concatLists[A](list: Lizt[Lizt[A]]): Lizt[A] = {
     foldRight(list, Lizt[A]())((h, l) => append(h, l))
-  }
-
-  def foldLeft[A, B](list: Lizt[A], z: B)(f: (B, A) => B): B = list match {
-    case Nill => z
-    case Cons(head, tail) => foldLeft(tail, f(z, head))(f)
   }
 
   def incrementInts(list: Lizt[Int], inc: Int) = list match {
@@ -201,8 +193,8 @@ object Lizt {
     }
   }
 
-  def reverse[A](list: Lizt[A]): Lizt[A] = list match {
-    case Nill => Nill
-    case _ => foldLeft(list, Lizt[A]())((l, h) => Cons(h, l))
-  }
+//  def reverse[A](list: Lizt[A]): Lizt[A] = list match {
+//    case Nill => Nill
+//    case _ => foldLeft(list, Lizt[A]())((l, h) => Cons(h, l))
+//  }
 }

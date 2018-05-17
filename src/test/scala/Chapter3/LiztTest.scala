@@ -16,24 +16,73 @@ class LiztTest extends FlatSpec with Matchers {
     x shouldBe 3
   }
 
+  // 3.2
   "tail" should "remove first element in a list" in {
     Lizt.tail(Lizt(1,2,3,4,5)) shouldBe Lizt(2,3,4,5)
   }
 
+  // 3.3
   "setHead" should "replace the head for the given list" in {
     Lizt.setHead(Lizt(1,2,3,4,5), 55) shouldBe Lizt(55,2,3,4,5)
   }
 
+  // 3.4
   "drop" should "remove the first n elements from a list" in {
     Lizt.drop(Lizt(1,2,3,5,6,7,8), 3) shouldBe Lizt(5,6,7,8)
   }
 
+  // 3.5
   "dropWhile" should "remove elements from the List prefix as long as they match a predicate" in {
     Lizt.dropWhile(Lizt(1,2,3,4,5,6,7,8))((xv: Int) => xv <= 4) shouldBe Lizt(5,6,7,8)
   }
 
+  // 3.6
   "init" should "return a List consisting of all but the last element of a List" in {
     Lizt.init(Lizt(1,2,3,5,6,7)) shouldBe Lizt(1,2,3,5,6)
+  }
+
+  // 3.7
+  "sum" should "return the sum of all ints in a list" in {
+    Lizt.sum(Lizt(1,2,3,5,6)) shouldBe 17
+  }
+
+  // 3.7
+  "product" should "return the product of all ints in a list" in {
+    Lizt.product(Lizt(1,2,3,4,5)) shouldBe 120
+  }
+
+  // 3.7
+  "productWithFoldRight" should "return the product of all ints in a list" in {
+    Lizt.productWithFoldRight(Lizt(1,2,3,4,5)) shouldBe 120
+    Lizt.productWithFoldRight(Lizt(1,2,3,4,5)) shouldBe Lizt.product(Lizt(1,2,3,4,5))
+  }
+
+  // 3.8
+  "Nil and Cons to foldRight" should "should return the same Lizt" in {
+    Lizt.foldRight(Lizt(1,2,3), Nill:Lizt[Int])((a, b) => Cons(a, b)) shouldBe Lizt(1,2,2)
+  }
+
+  // 3.9
+  "length" should "compute the length of a Lizt" in {
+    Lizt.lengthWithFoldRight(Lizt(1,2,2,2,2,2,2)) shouldBe 7
+  }
+
+  // 3.10
+  "foldLeft" should "return same result as foldRight" in {
+    Lizt.foldLeft(Lizt(1,2,3,4,5), 0)((acc, _) => acc + 1) shouldBe Lizt.lengthWithFoldRight(Lizt(1,2,3,4,5))
+  }
+
+  // 3.11
+  "functions using foldLeft" should "return same result as same functions using foldRight" in {
+    Lizt.sum(Lizt(1,2,3,5,6)) shouldBe Lizt.sumUsingFoldLeft(Lizt(1,2,3,5,6))
+    Lizt.productWithFoldRight(Lizt(1,2,3,4,5)) shouldBe Lizt.productUsingFoldLeft(Lizt(1,2,3,4,5))
+    Lizt.lengthWithFoldRight(Lizt(1,2,2,2,2,2,2)) shouldBe Lizt.lengthUsingFoldLeft(Lizt(1,2,2,2,2,2,2))
+  }
+
+  // 3.12
+  "reverse" should "return a Lizt in reverse" in {
+    Lizt.reverse(Lizt(1,2,3,4)) shouldBe Lizt(4,3,2,1)
+    Lizt.reverse(Lizt(1,2,3,6,7)) shouldBe Lizt.reverseWithFoldRight(Lizt(1,2,3,6,7))
   }
 
   "foldRight" should "traverse left to right" in {
